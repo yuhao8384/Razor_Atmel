@@ -88,7 +88,14 @@ Promises:
 */
 void UserAppInitialize(void)
 {
-  /*Test comment for github*/
+  LedOff(RED);
+  LedOff(ORANGE);
+  LedOff(YELLOW);
+  LedOff(GREEN);
+  LedOff(CYAN);
+  LedOff(BLUE);
+  LedOff(PURPLE);
+  LedOff(WHITE);
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -137,6 +144,45 @@ State Machine Function Definitions
 /* Wait for a message to be queued */
 static void UserAppSM_Idle(void)
 {
+  //set a variable value to record the state of yellow led
+    static u8 u8rate_number = 0;
+    
+  //define a array to keep the different rate
+    static LedRateType rate[] ={LED_1HZ,LED_2HZ,LED_4HZ,LED_8HZ};
+    
+  //Button1 control the purple led instantly
+    if( IsButtonPressed(BUTTON1) )
+    {
+      /* The button is currently pressed, so make sure the LED is on */
+      LedOn(PURPLE);
+    }
+    else
+    {
+      /* The button is not pressed, so make sure the LED is off */
+      LedOff(PURPLE);
+    }
+    //Button2 control the blue led instantly
+        if( IsButtonPressed(BUTTON2) )
+    {
+      /* The button is currently pressed, so make sure the LED is on */
+      LedOn(BLUE);
+    }
+    else
+    {
+      /* The button is not pressed, so make sure the LED is off */
+      LedOff(BLUE);
+    }
+    
+    //change the rate of yellow led in a circle with Button2
+    if( WasButtonPressed(BUTTON2) )
+    {
+      /* Be sure to acknowledge the button press */
+      ButtonAcknowledge(BUTTON2);
+      
+      u8rate_number++;
+     if(u8rate_number == 4) u8rate_number=0;
+     LedBlink(YELLOW,(LedRateType)rate[u8rate_number]);
+   }
     
 } /* end UserAppSM_Idle() */
      
