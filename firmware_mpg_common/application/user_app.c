@@ -88,7 +88,20 @@ Promises:
 */
 void UserAppInitialize(void)
 {
-  /*Test comment for github*/
+   /* Set all LEDs to blink at 2Hz */
+  LedOff(RED); 
+  LedOff(YELLOW);  
+  LedOff(ORANGE);  
+  LedOff(GREEN);      
+  LedOff(CYAN);  
+  LedOff(BLUE); 
+  LedOff(PURPLE); 
+  LedOff(WHITE); 
+  
+  LedOff(LCD_RED);
+  LedOff(LCD_BLUE);
+  LedOff(LCD_GREEN);
+
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -137,7 +150,109 @@ State Machine Function Definitions
 /* Wait for a message to be queued */
 static void UserAppSM_Idle(void)
 {
+  /**/
+  static u16 u16timecounter = 0;
+  
+  static u8 u8backlightcounter = 0;
+  
+  u16timecounter++;
+  
+  if(u16timecounter==300)
+  { 
+     
+      LedOn(YELLOW);  
+      LedOn(ORANGE);  
+      LedOn(GREEN);      
+      LedOn(CYAN);  
+      LedOn(BLUE); 
+      LedOn(PURPLE); 
+   
+  }
+  if(u16timecounter==400)
+  { 
     
+      LedOff(YELLOW);  
+      LedOff(ORANGE);  
+      LedOff(GREEN);      
+      LedOff(CYAN);  
+      LedOff(BLUE); 
+      LedOff(PURPLE); 
+     
+  }
+  
+    if(u16timecounter==700)
+  { 
+      
+      LedOn(YELLOW);  
+      LedOn(ORANGE);  
+      LedOn(GREEN);      
+      LedOn(CYAN);  
+      LedOn(BLUE);
+      LedOn(PURPLE);
+    
+  }
+  if(u16timecounter==800)
+  { 
+       
+      LedOff(YELLOW);  
+      LedOff(ORANGE);  
+      LedOff(GREEN);      
+      LedOff(CYAN);  
+      LedOff(BLUE); 
+      LedOff(PURPLE); 
+     
+  }
+
+  if(u16timecounter==1000)
+  { 
+    
+    LedOn(RED);
+    LedOn(WHITE);
+    u8backlightcounter++;
+    
+    if(u8backlightcounter==4) u8backlightcounter=1;
+    
+    switch(u8backlightcounter)
+      {
+         
+        case 1: /* blue */
+        LedOff(LCD_RED);
+          LedOff(LCD_GREEN);
+          LedOn(LCD_BLUE);
+          break;
+          
+        case 2: /* green */
+         LedOff(LCD_RED);
+          LedOn(LCD_GREEN);
+          LedOff(LCD_BLUE);
+          break;
+          
+        case 3: /* red */
+         LedOn(LCD_RED);
+          LedOff(LCD_GREEN);
+          LedOff(LCD_BLUE);
+          break;
+          
+        default: /* off */
+         LedOff(LCD_RED);
+          LedOff(LCD_GREEN);
+          LedOff(LCD_BLUE);
+          break;
+      } /* end switch */
+  }
+  
+  if(u16timecounter==1400)
+  {
+    u16timecounter=0;
+    
+    LedOff(RED);
+    LedOff(WHITE);
+    LedOff(LCD_RED);
+    LedOff(LCD_GREEN);
+    LedOff(LCD_BLUE);
+  }
+
+ 
 } /* end UserAppSM_Idle() */
      
 
