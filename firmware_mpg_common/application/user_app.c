@@ -88,7 +88,7 @@ Promises:
 */
 void UserAppInitialize(void)
 {
-  
+  PWMAudioOff(BUZZER1);
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -137,7 +137,52 @@ State Machine Function Definitions
 /* Wait for a message to be queued */
 static void UserAppSM_Idle(void)
 {
-    
+    static bool Music_Flag = FALSE; /*set a flag to record the state of music*/
+    static u8 u8i ;/*set a variable value to rotate the frequence circle*/
+    static u16 u16timecounter = 0;
+    /*the frequences array of the music of lamb*/
+    static u16 u16lamb_music[] = {330,294,262,294,330,330,330,
+                                 294,294,294,
+                                 330,392,392,
+                                 330,294,262,294,330,330,330,
+                                 330,294,294,330,294,262};
+    u16timecounter++;
+    /*every frequency lasts for 200ms*/
+    if( u16timecounter == 200 )
+    {
+      u16timecounter = 0;
+      u8i++;
+      if( u8i == sizeof(u16lamb_music) )
+      {
+        u8i = 0;
+      }
+    } 
+   /*change the frequency*/   
+    PWMAudioSetFrequency( BUZZER1, u16lamb_music[u8i] );
+   
+    /*change the state of the Music(On or Off)through BUTTON0*/
+   if(WasButtonPressed(BUTTON0))
+    {
+      ButtonAcknowledge(BUTTON0);
+      if(Music_Flag == TRUE)
+      {
+        Music_Flag = FALSE; 
+      }
+      else
+      {
+        Music_Flag = TRUE;
+      }
+    }
+   /*turn on or off BUZZER1 according to the value of Music_flag*/ 
+    if(Music_Flag == TRUE)
+    {
+      PWMAudioOn(BUZZER1);
+    }
+    else
+    {
+      PWMAudioOff(BUZZER1);
+    }
+  
 } /* end UserAppSM_Idle() */
      
 
