@@ -161,7 +161,8 @@ State Machine Function Definitions
 static void UserAppSM_Idle(void)
 {
   static bool bCursorOn = FALSE;
-  
+  static u8 u8timecounter = 0;
+
   if(WasButtonPressed(BUTTON0))
   {
     ButtonAcknowledge(BUTTON0);
@@ -260,9 +261,8 @@ static void UserAppSM_Idle(void)
     LCDCommand(LCD_ADDRESS_CMD | UserApp_CursorPosition);
     LCDCommand(LCD_CLEAR_CMD);
     LCDMessage(UserApp_CursorPosition,UserApp_au8MyName);
-
   } 
-   
+    
   
 } /* end UserAppSM_Idle() */
      
