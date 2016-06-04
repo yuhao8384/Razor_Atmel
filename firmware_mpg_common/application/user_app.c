@@ -88,7 +88,8 @@ Promises:
 */
 void UserAppInitialize(void)
 {
-  /*Test comment for github*/
+  LCDCommand(LCD_CLEAR_CMD);
+  LCDMessage(LINE1_START_ADDR+4, "A3.YuHao");
   /* If good initialization, set state to Idle */
   if( 1 )
   {
