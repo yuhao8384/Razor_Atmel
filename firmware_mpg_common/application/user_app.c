@@ -65,7 +65,9 @@ static u32 UserApp_u32Timeout;                      /* Timeout counter used acro
 
 static u8 UserApp_au8UserInputBuffer[128];  /* Char buffer */
 static u8* UserApp_au8UserInputBuffer_pointer = UserApp_au8UserInputBuffer;
-static u32 u32CharsNumber = 0; /*the total number of chars*/
+
+
+
 
 /**********************************************************************************************************************
 Function Definitions
@@ -109,9 +111,9 @@ void UserAppInitialize(void)
     UserApp_au8UserInputBuffer[i] = 0;
   }
   
-  /* set the cursor */
-  LCDCommand(LCD_ADDRESS_CMD | LINE2_START_ADDR);  
-  
+  /* Home the cursor */
+  LCDCommand(LCD_ADDRESS_CMD | LINE2_START_ADDR); 
+  LCDCommand(LCD_DISPLAY_CMD | LCD_DISPLAY_ON | LCD_DISPLAY_CURSOR | LCD_DISPLAY_BLINK);
   
   /* If good initialization, set state to Idle */
   if( 1 )
@@ -163,24 +165,47 @@ static void UserAppSM_Idle(void)
 {
    u8 u8CharsCount = 0;/*the number of chars*/
    static u32 u32CharsNumber = 0; /*the total number of chars*/
-
-   /* Read the buffer*/   
-   u8CharsCount = DebugScanf(UserApp_au8UserInputBuffer_pointer);
-   u32CharsNumber += u8CharsCount;
+   static u8 u8CursorPosition = 0;
+   static u8 u8ScanRate = 0;
    
-   /*moves the pointer in a circle*/
-   if( (u32CharsNumber % 128) ==0)
+   u8ScanRate++;
+   /*Scan the keyboard every 10ms*/
+   if(u8ScanRate == 10)
    {
-     UserApp_au8UserInputBuffer_pointer = UserApp_au8UserInputBuffer;
+       u8ScanRate = 0;
+       /* Read the buffer*/   
+       u8CharsCount = DebugScanf(UserApp_au8UserInputBuffer_pointer);
+       u32CharsNumber += u8CharsCount;
+       
+       /*display the chars*/
+       LCDMessage(LINE2_START_ADDR + u8CursorPosition, UserApp_au8UserInputBuffer_pointer);
+       
+       /* if UserApp_au8UserInputBuffer is full, start from begining*/
+       if( (u32CharsNumber % 127) ==0)
+       {
+           for(u8 i = 0; i < 128; i++)
+          {
+            UserApp_au8UserInputBuffer[i] = 0;
+          }
+         UserApp_au8UserInputBuffer_pointer = UserApp_au8UserInputBuffer;
+       }
+       else
+       {
+         UserApp_au8UserInputBuffer_pointer += u8CharsCount;
+       }
+       
+       /*if screen is full, start from the left*/
+       if(u8CursorPosition == 20 )
+       {
+         LCDClearChars(LINE2_START_ADDR, 20);
+         u8CursorPosition = 0;
+       }
+       else
+       {
+         u8CursorPosition += u8CharsCount;
+       }
    }
-   else
-   {
-     UserApp_au8UserInputBuffer_pointer += u8CharsCount;
-   }
-
-
-
-
+   
 } /* end UserAppSM_Idle() */
      
 
