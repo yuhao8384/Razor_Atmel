@@ -60,12 +60,12 @@ Variable names shall start with "UserApp_" and be declared as static.
 static fnCode_type UserApp_StateMachine;            /* The state machine function pointer */
 static u32 UserApp_u32Timeout;                      /* Timeout counter used across states */
 
+
 static u8 UserApp_au8UserInputBuffer[128];  /* Char buffer */
 static u8* UserApp_au8UserInputBuffer_pointer = UserApp_au8UserInputBuffer;
 
 static u8 User_name[] = "yuhao" ;/* the user's name*/
 static u8* User_name_pointer = User_name;
-
 
 /**********************************************************************************************************************
 Function Definitions
@@ -103,6 +103,16 @@ void UserAppInitialize(void)
   LedOn(LCD_BLUE);
   LedOff(LCD_GREEN);
   
+  /*init the leds*/
+//  LedOff(RED);
+  LedOff(ORANGE);
+  LedOff(YELLOW);
+  LedOff(GREEN);
+  LedOff(CYAN);
+  LedOff(BLUE);
+  LedOff(PURPLE);
+  LedOff(WHITE);
+  
   /*clear the user_input_buffer*/
   for(u8 i = 0; i < 128; i++)
   {
@@ -113,6 +123,9 @@ void UserAppInitialize(void)
   LCDCommand(LCD_ADDRESS_CMD | LINE2_START_ADDR); 
   LCDCommand(LCD_DISPLAY_CMD | LCD_DISPLAY_ON | LCD_DISPLAY_CURSOR | LCD_DISPLAY_BLINK);
   
+  PWMAudioSetFrequency(BUZZER1, 500);
+  
+
 
   /* If good initialization, set state to Idle */
   if( 1 )
@@ -162,13 +175,15 @@ State Machine Function Definitions
 /* Wait for a message to be queued */
 static void UserAppSM_Idle(void)
 {
-
+   static u32 u32timecounter = 0;
    u8 u8CharsCount = 0;/*the number of chars*/
    static u32 u32CharsNumber = 0; /*the total number of chars*/
    static u8 u8CursorPosition = 0;
    static u8 u8ScanRate = 0;
    static u8 name_buffer[200];
    static u8* name_buffer_pointer = name_buffer;
+   static bool bWarning = FALSE ;
+   static u8 u8name_count = 0;
          
    /*Scan the keyboard every 10ms*/
    u8ScanRate++;
@@ -188,10 +203,18 @@ static void UserAppSM_Idle(void)
            User_name_pointer++;
            name_buffer_pointer++;
            
-           /*compare from begining*/
+           /*compare from begining£¬start the Waning and report the number */
            if(*User_name_pointer == '\0')
            {
              User_name_pointer = User_name;
+             bWarning = TRUE;
+             u32timecounter = 0;/*as long as there is a full name, refresh the Waning time*/
+             LedBlink(RED,LED_4HZ);
+             PWMAudioOn(BUZZER1);
+             u8name_count++; /*the number of name plus 1*/
+             DebugPrintf("\n\ryuhao: ");
+             DebugPrintNumber(u8name_count);
+             DebugPrintf(" times\n\r");
            }
          }
        }
@@ -225,6 +248,21 @@ static void UserAppSM_Idle(void)
        }
    }
    
+   /*turn on the Warning for 5 seconds*/
+     if(bWarning == TRUE)
+     {
+       u32timecounter++;
+     }
+     
+     if(u32timecounter == 5000)
+     {
+       u32timecounter = 0;
+       bWarning = FALSE;
+       PWMAudioOff(BUZZER1);
+       LedOff(RED);
+     }
+         
+   
    /*Clear the chars in Line2 and start from begining*/
    if( WasButtonPressed(BUTTON0) )
    {
@@ -256,7 +294,7 @@ static void UserAppSM_Idle(void)
      DebugPrintf("\n\rthe current letters: "); 
      DebugPrintf(name_buffer);
    }
-   
+
 } /* end UserAppSM_Idle() */
      
 

@@ -39,6 +39,8 @@ typedef enum {SPI, UART, USART0, USART1, USART2, USART3} PeripheralType;
 Includes
 ***********************************************************************************************************************/
 /* Common header files */
+#include "user_app2.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include "AT91SAM3U4.h"
