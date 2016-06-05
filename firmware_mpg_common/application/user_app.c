@@ -52,6 +52,9 @@ extern volatile u32 G_u32ApplicationFlags;             /* From main.c */
 extern volatile u32 G_u32SystemTime1ms;                /* From board-specific source file */
 extern volatile u32 G_u32SystemTime1s;                 /* From board-specific source file */
 
+extern u8 G_au8DebugScanfBuffer[];  /* From debug.c */
+extern u8 G_u8DebugScanfCharCount;  /* From debug.c */
+
 
 /***********************************************************************************************************************
 Global variable definitions with scope limited to this local application.
@@ -60,6 +63,9 @@ Variable names shall start with "UserApp_" and be declared as static.
 static fnCode_type UserApp_StateMachine;            /* The state machine function pointer */
 static u32 UserApp_u32Timeout;                      /* Timeout counter used across states */
 
+static u8 UserApp_au8UserInputBuffer[128];  /* Char buffer */
+static u8* UserApp_au8UserInputBuffer_pointer = UserApp_au8UserInputBuffer;
+static u32 u32CharsNumber = 0; /*the total number of chars*/
 
 /**********************************************************************************************************************
 Function Definitions
@@ -88,8 +94,25 @@ Promises:
 */
 void UserAppInitialize(void)
 {
+  /*display my name in Line1*/
   LCDCommand(LCD_CLEAR_CMD);
   LCDMessage(LINE1_START_ADDR+4, "A3.YuHao");
+  
+  /*set the backlight of LCD*/
+  LedOn(LCD_RED);
+  LedOn(LCD_BLUE);
+  LedOff(LCD_GREEN);
+  
+  /*clear the user_input_buffer*/
+  for(u8 i = 0; i < 128; i++)
+  {
+    UserApp_au8UserInputBuffer[i] = 0;
+  }
+  
+  /* set the cursor */
+  LCDCommand(LCD_ADDRESS_CMD | LINE2_START_ADDR);  
+  
+  
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -138,7 +161,26 @@ State Machine Function Definitions
 /* Wait for a message to be queued */
 static void UserAppSM_Idle(void)
 {
-    
+   u8 u8CharsCount = 0;/*the number of chars*/
+   static u32 u32CharsNumber = 0; /*the total number of chars*/
+
+   /* Read the buffer*/   
+   u8CharsCount = DebugScanf(UserApp_au8UserInputBuffer_pointer);
+   u32CharsNumber += u8CharsCount;
+   
+   /*moves the pointer in a circle*/
+   if( (u32CharsNumber % 128) ==0)
+   {
+     UserApp_au8UserInputBuffer_pointer = UserApp_au8UserInputBuffer;
+   }
+   else
+   {
+     UserApp_au8UserInputBuffer_pointer += u8CharsCount;
+   }
+
+
+
+
 } /* end UserAppSM_Idle() */
      
 
