@@ -206,6 +206,14 @@ static void UserAppSM_Idle(void)
        }
    }
    
+   /*Clear the chars in Line2 and start from begining*/
+   if( WasButtonPressed(BUTTON0) )
+   {
+     ButtonAcknowledge(BUTTON0);
+     LCDClearChars(LINE2_START_ADDR, 20);
+     u8CursorPosition = 0;    
+   }
+   
 } /* end UserAppSM_Idle() */
      
 
