@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=-2019999832
+Checksum=275084280
 [JLinkDriver]
 CStepIntDis=_ 0
 WatchCond=_ 0
@@ -47,9 +47,6 @@ Count=1
 LoggingEnabled=_ 0
 LogFile=_ ""
 Category=_ 0
-[TermIOLog]
-LoggingEnabled=_ 0
-LogFile=_ ""
 [Aliases]
 Count=0
 SuppressDialog=0
@@ -61,3 +58,6 @@ Mode=0
 Graph=0
 Symbiont=0
 Exclusions=
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""

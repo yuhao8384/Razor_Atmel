@@ -222,6 +222,13 @@ static void UserAppSM_Idle(void)
      DebugPrintNumber(u32CharsNumber);   
    }
    
+   /*Clear the Total Number and Report a Message*/
+   if( WasButtonPressed(BUTTON2) )
+   {
+     ButtonAcknowledge(BUTTON2);
+     u32CharsNumber = 0;
+     DebugPrintf("\n\rCharacter Count Cleared!");       
+   }
    
 } /* end UserAppSM_Idle() */
      
