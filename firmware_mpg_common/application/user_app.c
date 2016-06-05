@@ -214,6 +214,15 @@ static void UserAppSM_Idle(void)
      u8CursorPosition = 0;    
    }
    
+   /*Print the total number*/
+   if( WasButtonPressed(BUTTON1) )
+   {
+     ButtonAcknowledge(BUTTON1);
+     DebugPrintf("\n\rTotal number: ");
+     DebugPrintNumber(u32CharsNumber);   
+   }
+   
+   
 } /* end UserAppSM_Idle() */
      
 
