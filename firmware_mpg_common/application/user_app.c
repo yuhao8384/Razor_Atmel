@@ -52,9 +52,6 @@ extern volatile u32 G_u32ApplicationFlags;             /* From main.c */
 extern volatile u32 G_u32SystemTime1ms;                /* From board-specific source file */
 extern volatile u32 G_u32SystemTime1s;                 /* From board-specific source file */
 
-extern u8 G_au8DebugScanfBuffer[];  /* From debug.c */
-extern u8 G_u8DebugScanfCharCount;  /* From debug.c */
-
 
 /***********************************************************************************************************************
 Global variable definitions with scope limited to this local application.
@@ -66,7 +63,8 @@ static u32 UserApp_u32Timeout;                      /* Timeout counter used acro
 static u8 UserApp_au8UserInputBuffer[128];  /* Char buffer */
 static u8* UserApp_au8UserInputBuffer_pointer = UserApp_au8UserInputBuffer;
 
-
+static u8 User_name[] = "yuhao" ;/* the user's name*/
+static u8* User_name_pointer = User_name;
 
 
 /**********************************************************************************************************************
@@ -96,9 +94,9 @@ Promises:
 */
 void UserAppInitialize(void)
 {
-  /*display my name in Line1*/
   LCDCommand(LCD_CLEAR_CMD);
   LCDMessage(LINE1_START_ADDR+4, "A3.YuHao");
+
   
   /*set the backlight of LCD*/
   LedOn(LCD_RED);
@@ -115,6 +113,7 @@ void UserAppInitialize(void)
   LCDCommand(LCD_ADDRESS_CMD | LINE2_START_ADDR); 
   LCDCommand(LCD_DISPLAY_CMD | LCD_DISPLAY_ON | LCD_DISPLAY_CURSOR | LCD_DISPLAY_BLINK);
   
+
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -163,19 +162,39 @@ State Machine Function Definitions
 /* Wait for a message to be queued */
 static void UserAppSM_Idle(void)
 {
+
    u8 u8CharsCount = 0;/*the number of chars*/
    static u32 u32CharsNumber = 0; /*the total number of chars*/
    static u8 u8CursorPosition = 0;
    static u8 u8ScanRate = 0;
-   
-   u8ScanRate++;
+   static u8 name_buffer[200];
+   static u8* name_buffer_pointer = name_buffer;
+         
    /*Scan the keyboard every 10ms*/
+   u8ScanRate++;
    if(u8ScanRate == 10)
    {
        u8ScanRate = 0;
        /* Read the buffer*/   
        u8CharsCount = DebugScanf(UserApp_au8UserInputBuffer_pointer);
        u32CharsNumber += u8CharsCount;
+      
+       /*compare each char to my name ,and store the same one in name_buffer*/
+       if(u8CharsCount > 0)
+       {
+         if( tolower(*UserApp_au8UserInputBuffer_pointer) == *User_name_pointer )
+         {
+           *name_buffer_pointer = *UserApp_au8UserInputBuffer_pointer;
+           User_name_pointer++;
+           name_buffer_pointer++;
+           
+           /*compare from begining*/
+           if(*User_name_pointer == '\0')
+           {
+             User_name_pointer = User_name;
+           }
+         }
+       }
        
        /*display the chars*/
        LCDMessage(LINE2_START_ADDR + u8CursorPosition, UserApp_au8UserInputBuffer_pointer);
