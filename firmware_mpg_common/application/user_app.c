@@ -249,6 +249,14 @@ static void UserAppSM_Idle(void)
      DebugPrintf("\n\rCharacter Count Cleared!");       
    }
    
+   /*Print the current letters in name_buffer*/
+   if( WasButtonPressed(BUTTON3) )
+   {
+     ButtonAcknowledge(BUTTON3);
+     DebugPrintf("\n\rthe current letters: "); 
+     DebugPrintf(name_buffer);
+   }
+   
 } /* end UserAppSM_Idle() */
      
 
