@@ -39,7 +39,6 @@ Constants / Definitions
 #define ANT_FREQUENCY_USERAPP           (u8)50                
 #define ANT_TX_POWER_USERAPP            RADIO_TX_POWER_0DBM
 
-#define TIMEOUT_VALUE                   (u32)3000 /*Time for state Timeout*/
 
 /**********************************************************************************************************************
 Function Declarations
@@ -68,13 +67,7 @@ State Machine Declarations
 static void UserAppSM_Idle(void);    
 
 static void UserAppSM_Error(void);         
-static void UserAppSM_FailedInit(void);        
-
-static void UserAppSM_WaitChannelOpen(void) ;  
-
-static void UserAppSM_ChannelOpen(void);
-
-static void UserAppSM_WaitChannelClose(void) ;         
+static void UserAppSM_FailedInit(void);         
 
 
 #endif /* __USER_APP_H */
